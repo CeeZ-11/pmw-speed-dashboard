@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>PMW Speed Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <!-- Icon rail -->
+      <nav class="rail" aria-label="Sections">
+        <button class="rail-btn is-active" data-nav="dashboard" title="Dashboard" aria-label="Dashboard">
+          <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg>
+        </button>
+        <button class="rail-btn" data-nav="new-audit" title="New audit" aria-label="New audit">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
+        </button>
+        <button class="rail-btn" data-nav="site-lists" title="Site lists" aria-label="Site lists">
+          <svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11" /><circle cx="4.5" cy="6" r="1" /><circle cx="4.5" cy="12" r="1" /><circle cx="4.5" cy="18" r="1" /></svg>
+        </button>
+        <button class="rail-btn" data-nav="remediation" title="Fix plans" aria-label="Fix plans">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 0-5-5L9.3 6 12 8.7 8.7 12 6 9.3 3.7 11.7" /></svg>
+        </button>
+        <button class="rail-btn" data-nav="history" title="Audit history" aria-label="Audit history">
+          <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></svg>
+        </button>
+        <button class="rail-btn" data-nav="compare" title="Compare sites" aria-label="Compare sites">
+          <svg viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="10" rx="1" /><rect x="10" y="4" width="4" height="16" rx="1" /><rect x="17" y="13" width="4" height="7" rx="1" /></svg>
+        </button>
+        <span class="rail-live" id="rail-live"><i></i>Live</span>
+        <div class="rail-spacer"></div>
+        <button class="rail-btn" id="rail-search" title="Find a page" aria-label="Find a page">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" /><path d="M20 20l-4.5-4.5" /></svg>
+        </button>
+        <button class="rail-btn" data-nav="settings" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" /></svg>
+        </button>
+      </nav>
+
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">PMW</span>Speed Engine</div>
+        <nav class="toptabs" id="toptabs">
+          <button data-nav="overview">Overview</button>
+          <button data-nav="performance" class="is-active">Performance</button>
+          <button data-nav="accessibility">Accessibility</button>
+          <button data-nav="best-practices">Best Practices</button>
+          <button data-nav="seo">SEO</button>
+        </nav>
+        <div class="topbar-right">
+          <form id="rerun-form" class="url-form">
+            <input id="url-input" class="url-input" type="text" autocomplete="off" placeholder="https://example.com" aria-label="Website URL" />
+          </form>
+          <button id="rerun-btn" class="btn-primary" type="submit" form="rerun-form">Re-Run Audit</button>
+        </div>
+      </header>
+
+      <!-- Scope bar: which site, page, device and audit everything below describes -->
+      <div class="scopebar" id="scopebar">
+        <button class="scope-site" data-nav="overview" title="Site overview"><span id="scope-site">—</span></button>
+        <span class="scope-sep" aria-hidden="true">›</span>
+        <label class="scope-page" title="Page">
+          <span class="scope-k">Page</span>
+          <select id="page-select" aria-label="Page"></select>
+        </label>
+        <input id="page-search" class="scope-search" type="search" list="page-options" placeholder="Find a page…" aria-label="Find a page" autocomplete="off" />
+        <datalist id="page-options"></datalist>
+        <span class="scope-sep" aria-hidden="true">›</span>
+        <div class="device-toggle" id="device-toggle" role="group" aria-label="Device">
+          <button data-device="mobile">Mobile</button>
+          <button data-device="desktop">Desktop</button>
+        </div>
+        <label class="date-pick" title="Choose an audit of this site">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+          <select id="audit-select" aria-label="Audit"></select>
+        </label>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="site-card">
+          <div class="site-thumb" id="site-thumb" aria-hidden="true"></div>
+          <div class="site-meta">
+            <div class="site-domain" id="site-domain">—</div>
+            <div class="site-date" id="site-path"></div>
+            <div class="site-date" id="site-date"></div>
+          </div>
+        </div>
+        <div class="side-empty">Run an audit to see its Core Web Vitals, scores and diagnostics here.</div>
+        <div class="side-heading">Core Web Vitals</div>
+        <div id="side-cwv"></div>
+        <div class="side-heading side-heading--rule">Other metrics</div>
+        <div id="side-other"></div>
+        <div class="side-heading side-heading--rule">This page</div>
+        <div id="side-page"></div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main" id="main">
+        <div class="empty" id="empty-state">Loading audit…</div>
+      </main>
+
+      <!-- Right rail -->
+      <aside class="right" id="right"></aside>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script src="static-shim.js"></script>
+  </body>
+</html>
