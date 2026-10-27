@@ -1,0 +1,137 @@
+/* Shared design tokens — the ONE source of truth for the GUI shell (this
+   directory, loaded via styles.css's `@import url('tokens.css')`) and the
+   self-contained HTML report (src/reports/html/render.ts, which reads this
+   file's contents at generation time and inlines them into its own <style>
+   block, since a self-contained static report has no @import of its own to
+   rely on). Never hand-copy these values elsewhere — before this file
+   existed, the report kept its own duplicated copy and silently drifted out
+   of date (see git history around commit 8812d65).
+
+   Dark developer-workspace theme (Phase L) — reverted back to dark from the
+   Phase I/J light theme, per an explicit, detailed user-supplied palette
+   (exact hex values for background/sidebar/panels/elevated-panels/borders/
+   text tiers) that supersedes the earlier "not dark, hard to read" note
+   from Phase H. Token NAMES are unchanged across every theme this file has
+   held (--bg/--surface/--ink/--accent/--good/--warn/--poor/etc.) so every
+   existing consumer in both stylesheets (and the report's own inlined copy)
+   picks up the new values automatically — only the VALUES changed, not what
+   each token means semantically. Accent stays the same blue family as
+   Phase I/J, brightened slightly for legibility against a near-black
+   canvas.
+
+   Breakpoints are NOT expressed here as custom properties: CSS media-query
+   conditions cannot consume `var(...)`, so there is no way to make an
+   `@media` rule itself read from a shared token. The three canonical
+   breakpoints below are instead a documented convention every `@media` rule
+   in both stylesheets must match literally:
+     - tablet:  1024px  (@media (min-width: 1024px) / (max-width: 1023px))
+     - compact:  860px  (@media (min-width: 860px)  / (max-width: 859px))
+     - mobile:   640px  (@media (min-width: 640px)  / (max-width: 639px))
+   "compact" is where the app shell's own top nav first tightens up —
+   content should start stacking to one column at the same boundary, not a
+   different one. "mobile" is reserved for rules that need a narrower,
+   phone-specific step beyond that. */
+:root {
+  /* ground & ink — dark surfaces (Phase L), values taken directly from the
+     user's own supplied palette rather than derived/guessed. */
+  --bg: #15191f; /* panel / card / sidebar surface ("Panels") */
+  --surface: #0b0d10; /* canvas background behind panels ("Background") */
+  --surface-2: #101318; /* sidebar surface ("Sidebar") */
+  --surface-hover: #1b2027; /* panel/row hover state ("Elevated panels") */
+  --ink: #f3f4f6; /* primary text */
+  --ink-2: #9ca3af; /* body/secondary text */
+  --ink-3: #9ca3af; /* tertiary/UI-label text — same tier as secondary in this palette */
+  --muted: #6b7280; /* muted / dimmed text — labels & captions only, not body copy */
+  --quiet: #4b5563; /* rules & bars only — never text */
+  --faint: #2a3038; /* disabled fills, bar tracks — never text */
+  --line: #2a3038; /* borders & dividers */
+
+  /* rules */
+  --rule-strong: #3a4149; /* 2px section rules, strong borders */
+  --rule: #2a3038; /* 1px card borders, row rules ("Borders") */
+  --rule-soft: #20252c; /* 1px quiet row rules */
+
+  /* accent — blue brand color, matching the reference workspace; brightened
+     one step from the light theme's #2563eb so it still reads clearly
+     against a near-black canvas. */
+  --accent: #3b82f6;
+  --accent-press: #2563eb; /* filled-button hover/active state */
+  --accent-tint: rgba(
+    59,
+    130,
+    246,
+    0.16
+  ); /* rare tinted fill (e.g. "Why this matters", active nav row) — alpha-based so it works on any dark surface */
+
+  /* spacing — 8px base scale. Every margin/padding/gap in both stylesheets
+     should resolve to one of these seven steps; a hand-written pixel value
+     elsewhere is either a deliberate exception (documented as such) or drift
+     to be cleaned up, never a new step to add casually. */
+  --s-tight: 8px;
+  --s-item: 16px;
+  --s-block: 24px;
+  --s-pad: 32px;
+  --s-group: 48px;
+  --s-section: 96px;
+  --s-band: 128px;
+
+  /* geometry */
+  --rail: 240px;
+  --measure: 1120px;
+  --gutter: 64px;
+  --prose: 72ch;
+
+  /* Rounded, card-based workspace language (Phase I) — the reference image
+     uses soft-rounded panels/badges/buttons throughout, a deliberate
+     departure from the original flat/square system. Scoped to the newer
+     workspace components (nav, tag pills, badges, buttons, inspector
+     panel) rather than a full mechanical retrofit of every pre-existing
+     selector across 1500+ lines of GUI CSS and the legacy finding-card
+     system, which would be a much larger, separate change. */
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.28);
+
+  /* type — named preferences with system fallbacks, never loaded from an
+     external CDN: the report is a self-contained static file by design
+     (see renderHtmlReport's own docstring) and must never depend on a font
+     host staying reachable for a file that's meant to still open correctly
+     years later, offline. Renders as Inter/JetBrains Mono when the reader's
+     OS already has them installed, and a close system equivalent otherwise
+     — never a broken/missing glyph either way. */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* --- back-compat aliases for pre-existing selectors not yet migrated to
+     the tokens above --- */
+  --border: var(--rule);
+  --text: var(--ink-2);
+
+  /* Performance semantic statuses — foreground/background/border triplets.
+     Four visually distinct tiers (critical/high/medium/low+info) instead
+     of collapsing "critical" and "high" onto the same red, matching the
+     reference image's own Critical(red)/High(orange)/Medium(amber)/
+     Low(blue) distinction — these are real, pre-existing severity levels
+     in the Finding schema (SeveritySchema already includes 'critical'),
+     just newly given their own distinct color instead of being aliased. */
+  --critical: #f87171;
+  --critical-bg: rgba(248, 113, 113, 0.12);
+  --critical-border: rgba(248, 113, 113, 0.35);
+  --poor: #f87171;
+  --poor-bg: rgba(248, 113, 113, 0.12);
+  --poor-border: rgba(248, 113, 113, 0.35);
+  --high: #fb923c;
+  --high-bg: rgba(251, 146, 60, 0.12);
+  --high-border: rgba(251, 146, 60, 0.35);
+  --warn: #fbbf24;
+  --warn-bg: rgba(251, 191, 36, 0.12);
+  --warn-border: rgba(251, 191, 36, 0.35);
+  --good: #4ade80;
+  --good-bg: rgba(74, 222, 128, 0.12);
+  --good-border: rgba(74, 222, 128, 0.35);
+  /* Same values as --good/--warn — kept as distinct names only because
+     existing selectors already reference "-strong" specifically; both
+     base tones already clear 4.5:1 against this dark --bg/--surface. */
+  --good-strong: var(--good);
+  --warn-strong: var(--warn);
+}
